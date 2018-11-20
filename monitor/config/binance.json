@@ -1,8 +1,9 @@
 {
   "nonce": 0,
   "ding_token": "bc627eb1e96d00981b3f0dfa1f967f271a57c372c229e857c4d6795024ae3226",
-  "coins": ["BTCUSDT", "ETHBTC", "EOSBTC", "LTCBTC", "ADABTC", "ETCBTC", "BCCBTC"],
+  "symbols": ["BTCUSDT", "ETHBTC", "EOSBTC", "LTCBTC", "ADABTC", "ETCBTC", "BCCBTC"],
   "phones": ["13568954105","18380417339","18583994795"],
   "monitor_value": 0.01,
-  "time_limit": 300
+  "time_limit": 300,
+  "url": "https://api.binance.com/api/v1/depth?symbol=%s&limit=5"
 }
