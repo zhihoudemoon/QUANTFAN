@@ -18,7 +18,7 @@ class BinanceWathcher(watcher):
     def send_msg(self, message):
         _url = "https://oapi.dingtalk.com/robot/send?access_token={0}".format(self._send_func_dict['ding_token'])
         _users = self._send_func_dict['phones']
-        dingding_send_msg(url=_url, phones=_users, msg=message, isAtAll=False)
+        dingding_send_msg(url=_url, phones=_users, content=message, isAtAll=False)
 
 
     def fetch_market_price(self, symbol):
@@ -37,6 +37,5 @@ class BinanceWathcher(watcher):
 
 if __name__ == '__main__':
     config_path = os.path.join('config', 'binance.config')
-    send_type = "dingding"
-    binance_watcher = BinanceWathcher(config_path, send_type)
+    binance_watcher = BinanceWathcher(config_path)
     binance_watcher.start()
