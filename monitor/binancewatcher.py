@@ -12,10 +12,16 @@ class BinanceWathcher(watcher):
         return "watcher: {exchange}".format(self.exchange)
 
     def fetch_market_price(self, symbol):
-        resp = requests.get(self.url, %symbol)
+        resp = requests.get(self.url % (symbol,))
         data = resp.json()
-        bid = float(data["bids"][0][0])
-        ask = float(data["asks"][0][0])
+        if len(data["bids"]) == 0:
+            bid = 0.0
+        else:
+            bid = float(data["bids"][0][0])
+        if len(data["asks"]) == 0:
+            ask = 0.0
+        else:
+            ask = float(data["asks"][0][0])
         return bid, ask
 
 

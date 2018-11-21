@@ -27,7 +27,7 @@ def dingding_send_msg(url, content, phones, isAtAll):
     except Exception as err:
         return None
 
-def logger(name, log_level, console=True, log_path=""):
+def logger(name="root", log_level=logging.INFO, console=True, log_path=""):
     fmt = "%(asctime)-15s %(levelname)s %(module)s %(message)s"
     formatter = logging.Formatter(fmt)
     if console:
