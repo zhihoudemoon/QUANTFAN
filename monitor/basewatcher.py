@@ -30,22 +30,16 @@ class watcher(object):
         return (0.0, 0.0)
 
 
+    def send_msg(self, message):
+        self._logger.info(message)
+
+
     def _dispatcher(self):
         threads = []
         for symbol in self.symbols:
             t = threading.Thread(target=self._generate_msg, args=(symbol,), name="{0} watcher".format(symbol))
             threads.append(t)
         return threads
-
-    def _send_msg(self):
-        _threads = []
-        for symbol in self.symbols:
-            t = threading.Thread(target=self._generate_msg, args=(symbol,))
-            _threads.append(t)
-
-        for each_thread in _threads:
-            each_thread.start()
-            self._logger.info('watcher for {symbol} worker start...'.format(symbol))
 
 
     def _parse_config(self):
@@ -55,6 +49,7 @@ class watcher(object):
             self.url = config['url']
             self._monitor_value = config['monitor_value']
             self._time_limit = config['time_limit']
+            self._send_func_dict = config['send']
             self.debug = config['debug']
             if self.debug:
                 self._logger = logger()
@@ -70,35 +65,29 @@ class watcher(object):
             if last_price != 0.0:
                 move_precent = round(((lastest_price - last_price) / lastest_price)*100, 3)
                 last_price = lastest_price
-                if move_precent > self._monitor_value:
-                    msg = "{symbol}\n最新价格: {price}\n{period}秒价格上涨{precent}".format(symbol=str(symbol),
-                                                                                         price=str(lastest_price),
-                                                                                         period=str(self._time_limit),
-                                                                                         precent=str(move_precent))
-                        #self._send_func(msg)
-                    self._logger.info(msg)
-                elif move_precent < -self._monitor_value:
-                    msg = "{symbol}\n最新价格: {price}\n{period}秒价格下跌{precent}".format(symbol=str(symbol),
-                                                                                         price=str(lastest_price),
-                                                                                         period=str(self._time_limit),
-                                                                                         precent=str(move_precent))
-                        #self._send_func(msg)
-                    self._logger.info(msg)
+                if move_precent > (self._monitor_value * 100):
+                    msg = "{symbol}\n最新价格: {price}\n{period}秒价格上涨{precent}%".format(symbol=str(symbol),
+                                                                                          price=str(lastest_price),
+                                                                                          period=str(self._time_limit),
+                                                                                          precent=str(move_precent))
+                    self.send_msg(msg)
+                elif move_precent < -(self._monitor_value * 100):
+                    msg = "{symbol}\n最新价格: {price}\n{period}秒价格下跌{precent}%".format(symbol=str(symbol),
+                                                                                          price=str(lastest_price),
+                                                                                          period=str(self._time_limit),
+                                                                                          precent=str(move_precent))
+                    self.send_msg(msg)
             else:
                 last_price = lastest_price
             time.sleep(self._time_limit)
 
     def _update_config(self):
         while True:
-            try:
-                with open(self._config_path) as conf:
-                    config = json.load(conf)
-                    nonce = config['nonce']
-                    if self._last_nonce != nonce:
-                        self._monitor_value = config['monitor_value']
-                        self._time_limit = config['time_limit']
-                        self._last_nonce += 1
-                time.sleep(10)
-            except Exception as e:
-                self._logger.error(str(e))
-                time.sleep(10)
+            with open(self._config_path) as conf:
+                config = json.load(conf)
+                nonce = config['nonce']
+                if self._last_nonce != nonce:
+                    self._monitor_value = config['monitor_value']
+                    self._time_limit = config['time_limit']
+                    self._last_nonce += 1
+            time.sleep(10)

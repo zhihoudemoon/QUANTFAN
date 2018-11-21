@@ -3,7 +3,7 @@ import os
 import logging
 import requests
 
-def dingding_send_msg(url, content, phones, isAtAll):
+def dingding_send_msg(url, msg, phones, isAtAll=True):
     data = {
         "msgtype": "text",
         "text": {
@@ -22,7 +22,7 @@ def dingding_send_msg(url, content, phones, isAtAll):
         ret = json.loads(req.text)
         if ret.get("errcode") == 0 and ret.get("errmsg") == "ok":
             #sysLog().info('send alarm!!!')
-            logger(log_path='log/ding.log').info("send msg...")
+            logger(log_path='log/ding.log', console=False).info("send msg...")
             return True
     except Exception as err:
         return None
